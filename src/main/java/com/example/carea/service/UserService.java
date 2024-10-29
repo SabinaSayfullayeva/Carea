@@ -3,7 +3,9 @@ package com.example.carea.service;
 
 import com.example.carea.dto.ApiResponse;
 import com.example.carea.dto.Token;
+import com.example.carea.entity.Role;
 import com.example.carea.entity.User;
+import com.example.carea.entity.UserRole;
 import com.example.carea.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -53,6 +55,7 @@ public class UserService {
         // Create a new user
         User newUser = new User();
         newUser.setEmail(email);
+        newUser.setRole(new UserRole(Role.USER));
         newUser.setPassword(passwordEncoder.encode(password)); // Encode the password
         newUser.setEmail(email); // You can set the username differently if needed
 
