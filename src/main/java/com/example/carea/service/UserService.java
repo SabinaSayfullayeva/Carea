@@ -9,6 +9,7 @@ import com.example.carea.entity.Role;
 import com.example.carea.entity.User;
 import com.example.carea.entity.UserRole;
 import com.example.carea.repository.UserRepository;
+import com.example.carea.repository.UserRoleRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenService tokenService;
     private final ObjectMapper objectMapper;
+    private final UserRoleRepository userRoleRepository;
 
     public ResponseEntity<ApiResponse<Token>> login(String json) {
         ApiResponse<Token> response = new ApiResponse<>();
@@ -68,7 +70,7 @@ public class UserService {
             User newUser = new User();
             newUser.setEmail(signUpDTO.getEmail());
             newUser.setUsername(signUpDTO.getUsername());
-            newUser.setRole(new UserRole(Role.USER));
+            newUser.setRole(userRoleRepository.findById(1L).get());
             newUser.setPassword(passwordEncoder.encode(signUpDTO.getPassword())); // Encode the password
             newUser.setEmail(signUpDTO.getEmail()); // You can set the username differently if needed
 
