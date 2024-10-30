@@ -43,6 +43,7 @@ public class DataLoader implements CommandLineRunner
         {
             User user = new User();
             user.setRole(new UserRole(Role.ADMIN));
+            user.setUsername("admin");
             user.setEmail(s);
             user.setPassword(passwordEncoder.encode("x*x=-1"));
             userRepository.save(user);
