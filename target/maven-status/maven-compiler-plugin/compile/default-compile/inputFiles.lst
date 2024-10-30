@@ -14,6 +14,8 @@ C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\dto\CompanyDTO.
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\dto\ModelCreateDTO.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\dto\ModelDTO.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\dto\PhotoDTO.java
+C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\dto\SignInDTO.java
+C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\dto\SignUpDTO.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\dto\Token.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\entity\Brand.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\entity\Company.java
@@ -38,6 +40,7 @@ C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\repository\Comp
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\repository\ModelRepository.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\repository\PhotoRepository.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\repository\UserRepository.java
+C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\repository\UserRoleRepository.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\service\AuthService.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\service\BrandService.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\service\CompanyService.java

@@ -3,6 +3,7 @@ com\example\carea\service\AuthService.class
 com\example\carea\exception\LanguageNotSupportException.class
 com\example\carea\dto\CompanyDTO.class
 com\example\carea\exception\AuthorizationFailedException.class
+com\example\carea\repository\UserRoleRepository.class
 com\example\carea\CareaApplication.class
 com\example\carea\config\SecurityConfiguration.class
 com\example\carea\exception\NotDeleteException.class
