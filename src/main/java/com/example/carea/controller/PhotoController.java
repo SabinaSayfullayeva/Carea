@@ -21,10 +21,9 @@ public class PhotoController
 {
 
     private final PhotoService photoService;
-    private final PhotoRepository photoRepository;
-    private final ConversionService conversionService;
 
 
+    @PostMapping()
     public ResponseEntity<ApiResponse<List<Photo>>> upload(
             @RequestPart(name = "photo", required = false) List<MultipartFile> photo)
     {

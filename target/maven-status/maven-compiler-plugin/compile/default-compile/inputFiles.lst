@@ -25,6 +25,7 @@ C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\entity\Role.jav
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\entity\User.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\entity\UserRole.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\exception\AlreadyExistsException.java
+C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\exception\ApiException.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\exception\AuthorizationFailedException.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\exception\FileSavingException.java
 C:\Users\ASUS\IdeaProjects\carea\src\main\java\com\example\carea\exception\IllegalPhotoTypeException.java

@@ -30,11 +30,11 @@ public class Photo {
     String name;
 
     @JsonIgnore
-    String filepath;
+    String path;
 
     @JsonProperty(value = "url")
     @Column(unique = true)
-    String httpUrl;
+    String url;
 
     @JsonIgnore
     String type;
@@ -45,17 +45,17 @@ public class Photo {
             return;
 
         this.id = dto.getId();
-        this.httpUrl = dto.getUrl();
+        this.url = dto.getUrl();
     }
 
     @PreRemove
     private void deleteFile()
     {
-        if (this.filepath != null)
+        if (this.path != null)
         {
             try
             {
-                Files.delete(Paths.get(filepath));
+                Files.delete(Paths.get(path));
             } catch (IOException e)
             {
                 LOGGER.error("Error deleting file: ", e);

@@ -18,9 +18,9 @@ public interface PhotoRepository extends JpaRepository<Photo,Long> {
     @Query(value = "DELETE FROM photo WHERE id= :id", nativeQuery = true)
     void delete(Long id);
 
-    Optional<Photo> findByHttpUrl(String url);
+    Optional<Photo> findByUrl(String url);
 
     @Modifying
-    @Query(value = "UPDATE photo SET http_url= :url WHERE id= :id", nativeQuery = true)
+    @Query(value = "UPDATE photo SET url= :url WHERE id= :id", nativeQuery = true)
     void setUrl(String url, Long id);
 }
