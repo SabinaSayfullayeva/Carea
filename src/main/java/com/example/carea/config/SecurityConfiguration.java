@@ -64,7 +64,7 @@ public class SecurityConfiguration
                         //Auth
                         new AntPathRequestMatcher("/api/auth/login", "POST"),
                         new AntPathRequestMatcher("/api/auth/signup", "POST"),
-                        new AntPathRequestMatcher("/api/photo", "GET")
+                        new AntPathRequestMatcher("/api/photo/**", "GET")
 
                 };
     }
