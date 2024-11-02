@@ -11,8 +11,6 @@ import java.util.Optional;
 
 public interface PhotoRepository extends JpaRepository<Photo,Long> {
 
-    Optional<Photo> findByName(String name);
-
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM photo WHERE id= :id", nativeQuery = true)

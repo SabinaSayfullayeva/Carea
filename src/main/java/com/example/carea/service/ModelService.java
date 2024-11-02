@@ -1,6 +1,7 @@
 package com.example.carea.service;
 
 import com.example.carea.dto.*;
+import com.example.carea.entity.Brand;
 import com.example.carea.entity.Company;
 import com.example.carea.entity.Model;
 import com.example.carea.exception.NotFoundException;
@@ -31,11 +32,14 @@ public class ModelService {
     private final ObjectMapper objectMapper;
 
 
-    public ResponseEntity<ApiResponse<ModelDTO>> create(String json, MultipartFile photo) {
+    public ResponseEntity<ApiResponse<ModelDTO>> create(String json) {
         ApiResponse<ModelDTO> response = new ApiResponse<>();
+
         try {
-            // JSON formatdagi ma'lumotlarni parse qilish
+            // JSON ma'lumotini parse qilish
             ModelCreateDTO modelCreateDTO = objectMapper.readValue(json, ModelCreateDTO.class);
+
+            // Model yaratish
             Model model = new Model();
             model.setName(modelCreateDTO.getName());
             model.setStatus(modelCreateDTO.getStatus());
@@ -43,27 +47,11 @@ public class ModelService {
             model.setColor(modelCreateDTO.getColor());
             model.setRating(modelCreateDTO.getRating());
             model.setDescription(modelCreateDTO.getDescription());
+            model.setPhoto(photoService.save(modelCreateDTO.getPhotoUrl()));
 
-            // Foto faylni saqlash
-            model.setPhoto(photoService.save(photo));
-
-            // Brand tekshirish va sozlash
-            if (modelCreateDTO.getBrandId() == null) {
-                throw new NullPointerException("Brand is null");
-            } else if (brandRepository.findById(modelCreateDTO.getBrandId()).isEmpty()) {
-                throw new NotFoundException("Brand not found with id: " + modelCreateDTO.getBrandId());
-            } else {
-                model.setBrand(brandRepository.findById(modelCreateDTO.getBrandId()).get());
-            }
-
-            // Company tekshirish va sozlash
-            if (modelCreateDTO.getCompanyId() == null) {
-                throw new NullPointerException("Company is null");
-            } else if (companyRepository.findById(modelCreateDTO.getCompanyId()).isEmpty()) {
-                throw new NotFoundException("Company not found with id: " + modelCreateDTO.getCompanyId());
-            } else {
-                model.setCompany(companyRepository.findById(modelCreateDTO.getCompanyId()).get());
-            }
+            // Brend va kompaniya tekshirish
+            model.setBrand(validateBrand(modelCreateDTO.getBrandId()));
+            model.setCompany(validateCompany(modelCreateDTO.getCompanyId()));
 
             // Modelni saqlash
             Model savedModel = modelRepository.save(model);
@@ -72,78 +60,109 @@ public class ModelService {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (JsonProcessingException e) {
-            // JSON xatolarini ushlash
             response.setMessage("Invalid JSON format: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
-        } catch (NotFoundException e) {
-            // Brand yoki Company topilmagan holatlarda
-            response.setMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-
-        } catch (NullPointerException e) {
-            // Null qiymatlar bilan bog'liq xatolarni ushlash
+        } catch (NotFoundException | NullPointerException e) {
             response.setMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
         } catch (Exception e) {
-            // Boshqa xatolarni ushlash
             response.setMessage("An error occurred: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
-    public ResponseEntity<ApiResponse<List<ModelDTO>>> getAll(String name,Long brandId){
-        Specification<Model> specification = ModelSpecification.byFilters(
-                name,brandId);
-        ApiResponse<List<ModelDTO>> response = new ApiResponse<>();
-        List<Model> all = modelRepository.findAll(specification);
-        List<ModelDTO> dtos = new ArrayList<>();
-
-        for (Model model : all) {
-            dtos.add(new ModelDTO(model));
+    // Yordamchi metodlar
+    private Brand validateBrand(Long brandId) {
+        if (brandId == null) {
+            throw new NullPointerException("Brand is null");
         }
-
-        response.setData(dtos);
-        response.setMessage("Found " + dtos.size() + " model");
-
-        return ResponseEntity.ok(response);
+        return brandRepository.findById(brandId)
+                .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
     }
+
+    private Company validateCompany(Long companyId) {
+        if (companyId == null) {
+            throw new NullPointerException("Company is null");
+        }
+        return companyRepository.findById(companyId)
+                .orElseThrow(() -> new NotFoundException("Company not found with id: " + companyId));
+    }
+
+
+    public ResponseEntity<ApiResponse<List<ModelDTO>>> getAll(String name, Long brandId) {
+        ApiResponse<List<ModelDTO>> response = new ApiResponse<>();
+
+        try {
+            // Filtrlar bo'yicha modelni qidirish
+            Specification<Model> specification = ModelSpecification.byFilters(name, brandId);
+            List<Model> all = modelRepository.findAll(specification);
+            List<ModelDTO> dtos = new ArrayList<>();
+
+            for (Model model : all) {
+                dtos.add(new ModelDTO(model));
+            }
+
+            // Javobni sozlash
+            response.setData(dtos);
+            response.setMessage("Found " + dtos.size() + " models");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.setMessage("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
 
     public ResponseEntity<ApiResponse<ModelDTO>> getById(Long id) {
         ApiResponse<ModelDTO> response = new ApiResponse<>();
 
+        try {
+            // Modelni ID bo'yicha qidirish
+            Optional<Model> byId = modelRepository.findById(id);
 
-        Optional<Model> byId = modelRepository.findById(id);
+            if (byId.isEmpty()) {
+                response.setMessage("Model not found with id: " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
 
+            // Model topilgan bo'lsa, DTO yaratish
+            response.setData(new ModelDTO(byId.get()));
+            response.setMessage("Model found");
+            return ResponseEntity.ok(response);
 
-        if (byId.isEmpty()) {
-
-            response.setMessage("Model not found with id: " + id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            response.setMessage("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
-        response.setData(new ModelDTO(byId.get()));
-        response.setMessage("Model found");
-
-        return ResponseEntity.ok(response);
     }
+
 
     public ResponseEntity<ApiResponse<?>> delete(Long id) {
         ApiResponse<?> response = new ApiResponse<>();
 
-        // Model mavjudligini tekshirish
-        Optional<Model> modelOptional = modelRepository.findById(id);
-        if (modelOptional.isEmpty()) {
-            throw new NotFoundException("Model not found with id: " + id);
-        } else {
+        try {
+            // Model mavjudligini tekshirish
+            Optional<Model> modelOptional = modelRepository.findById(id);
+
+            if (modelOptional.isEmpty()) {
+                response.setMessage("Model not found with id: " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
             // Modelni o'chirish
             modelRepository.deleteById(id);
             response.setMessage("Model successfully deleted");
-        }
+            return ResponseEntity.ok(response);
 
-        return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.setMessage("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
+
 
 }

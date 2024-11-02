@@ -25,9 +25,8 @@ public class ModelController {
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<ModelDTO>> create(
-            @RequestParam(value = "json") String json,
-            @RequestParam(value = "photo") MultipartFile file) {
-        return modelService.create(json, file);
+            @RequestBody String json) {
+        return modelService.create(json);
     }
 
 

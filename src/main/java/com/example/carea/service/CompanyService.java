@@ -30,19 +30,20 @@ public class CompanyService {
 
     public ResponseEntity<ApiResponse<CompanyDTO>> create(String json) {
         ApiResponse<CompanyDTO> response = new ApiResponse<>();
+
         try {
             // JSON ma'lumotini parse qilish
             CompanyCreateDTO companyCreateDTO = objectMapper.readValue(json, CompanyCreateDTO.class);
 
-            // Yangi company yaratish va saqlash
+            // Yangi kompaniya yaratish va saqlash
             Company company = new Company();
             company.setName(companyCreateDTO.getName());
             company.setDescription(companyCreateDTO.getDescription());
-            Company save = companyRepository.save(company);
+            Company savedCompany = companyRepository.save(company);
 
             // Javobni sozlash
-            response.setData(new CompanyDTO(save));
-            response.setMessage("Brand successfully added");
+            response.setData(new CompanyDTO(savedCompany));
+            response.setMessage("Company successfully added");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (JsonProcessingException e) {
@@ -57,52 +58,78 @@ public class CompanyService {
         }
     }
 
-    public ResponseEntity<ApiResponse<List<CompanyDTO>>> getAll(){
+
+    public ResponseEntity<ApiResponse<List<CompanyDTO>>> getAll() {
         ApiResponse<List<CompanyDTO>> response = new ApiResponse<>();
-        List<Company> all = companyRepository.findAll();
-        List<CompanyDTO> dtos = new ArrayList<>();
 
-        for (Company company : all) {
-            dtos.add(new CompanyDTO(company));
+        try {
+            // Barcha kompaniyalarni olish
+            List<Company> all = companyRepository.findAll();
+            List<CompanyDTO> dtos = new ArrayList<>();
+
+            for (Company company : all) {
+                dtos.add(new CompanyDTO(company));
+            }
+
+            // Javobni sozlash
+            response.setData(dtos);
+            response.setMessage("Found " + dtos.size() + " companies");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.setMessage("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
-        response.setData(dtos);
-        response.setMessage("Found " + dtos.size() + " company");
-
-        return ResponseEntity.ok(response);
     }
+
 
 
     public ResponseEntity<ApiResponse<CompanyDTO>> getById(Long id) {
         ApiResponse<CompanyDTO> response = new ApiResponse<>();
 
+        try {
+            // Kompaniyani ID bo'yicha qidirish
+            Optional<Company> byId = companyRepository.findById(id);
 
-        Optional<Company> byId = companyRepository.findById(id);
+            if (byId.isEmpty()) {
+                response.setMessage("Company not found with id: " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
 
+            // Topilgan kompaniyani DTO ga o'girish va javobni sozlash
+            response.setData(new CompanyDTO(byId.get()));
+            response.setMessage("Company found");
+            return ResponseEntity.ok(response);
 
-        if (byId.isEmpty()) {
-
-            response.setMessage("Company not found with id: " + id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            response.setMessage("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
-
-        response.setData(new CompanyDTO(byId.get()));
-        response.setMessage("Company found");
-
-        return ResponseEntity.ok(response);
     }
+
 
     public ResponseEntity<ApiResponse<?>> delete(Long id) {
         ApiResponse<?> response = new ApiResponse<>();
-        Optional<Company> byId = companyRepository.findById(id);
-        if (byId.isEmpty()) {
-            throw new NotFoundException("Company not found with id: " + id);
-        }else {
-            companyRepository.deleteById(id);
-            response.setMessage("Successfully deleted");
+
+        try {
+            // Kompaniyani ID bo'yicha qidirish
+            Optional<Company> byId = companyRepository.findById(id);
+
+            if (byId.isEmpty()) {
+                response.setMessage("Company not found with id: " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            } else {
+                // Agar kompaniya mavjud bo'lsa, o'chirish
+                companyRepository.deleteById(id);
+                response.setMessage("Successfully deleted");
+                return ResponseEntity.ok(response);
+            }
+
+        } catch (Exception e) {
+            response.setMessage("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-        return ResponseEntity.ok(response);
     }
+
 
 }

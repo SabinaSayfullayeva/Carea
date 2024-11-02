@@ -23,37 +23,10 @@ public class PhotoController
     private final PhotoService photoService;
 
 
-    @PostMapping()
-    public ResponseEntity<ApiResponse<List<Photo>>> upload(
-            @RequestPart(name = "photo", required = false) List<MultipartFile> photo)
+    @GetMapping("/all")
+        public ResponseEntity<ApiResponse<List<Photo>>> allPhoto()
     {
-        return photoService.upload(photo);
-    }
-
-    @GetMapping("/{name}")
-    public ResponseEntity<byte[]> getPhoto(@PathVariable(name = "name") String name)
-    {
-        return photoService.findByName(name);
-    }
-
-
-    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
-    public ResponseEntity<ApiResponse<PhotoDTO>> updatePhoto(
-            @PathVariable(name = "id")
-            Long id,
-
-
-            @RequestPart(name = "new-photo", required = false) MultipartFile newPhoto)
-    {
-        return photoService.update(id, newPhoto);
-    }
-
-    @DeleteMapping("/{id}")
-        public ResponseEntity<ApiResponse<?>> deletePhoto(
-            @PathVariable
-             Long id)
-    {
-        return photoService.delete(id);
+        return photoService.getAll();
     }
 }
 

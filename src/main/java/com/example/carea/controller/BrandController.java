@@ -18,9 +18,8 @@ public class BrandController {
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<BrandDTO>> create(
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "icon") MultipartFile file){
-         return brandService.create(name,file);
+            @RequestBody String json){
+         return brandService.create(json);
     }
 
     @GetMapping("/get/{id}")

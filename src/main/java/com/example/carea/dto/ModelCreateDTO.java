@@ -28,4 +28,6 @@ public class ModelCreateDTO {
 
     Long companyId;
 
+    String photoUrl;
+
 }

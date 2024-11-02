@@ -26,21 +26,13 @@ public class Photo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @JsonIgnore
-    String name;
-
-    @JsonIgnore
-    String path;
 
     @JsonProperty(value = "url")
     @Column(unique = true)
     String url;
 
-    @JsonIgnore
-    String type;
 
-    public Photo(PhotoDTO dto)
-    {
+    public Photo(PhotoDTO dto) {
         if (dto == null)
             return;
 
@@ -48,18 +40,4 @@ public class Photo {
         this.url = dto.getUrl();
     }
 
-    @PreRemove
-    private void deleteFile()
-    {
-        if (this.path != null)
-        {
-            try
-            {
-                Files.delete(Paths.get(path));
-            } catch (IOException e)
-            {
-                LOGGER.error("Error deleting file: ", e);
-            }
-        }
-    }
 }

@@ -31,7 +31,6 @@ public class DataLoader implements CommandLineRunner
     @Override
     public void run(String... args) throws Exception
     {
-        createPhotoPath();
         securityUser();
     }
 
@@ -52,14 +51,5 @@ public class DataLoader implements CommandLineRunner
     }
 
 
-
-
-
-    private void createPhotoPath()
-    {
-        File directory = new File(photoPath);
-        if (!directory.exists())
-            directory.mkdirs();
-    }
 
 }
