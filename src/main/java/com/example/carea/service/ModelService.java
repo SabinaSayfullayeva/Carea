@@ -36,10 +36,16 @@ public class ModelService {
         ApiResponse<ModelDTO> response = new ApiResponse<>();
 
         try {
-            // JSON ma'lumotini parse qilish
+            // JSON ni ModelCreateDTO ga o‘girish
             ModelCreateDTO modelCreateDTO = objectMapper.readValue(json, ModelCreateDTO.class);
 
-            // Model yaratish
+            // Tekshiruv: ModelCreateDTO ning asosiy maydonlari null emasligini tekshirish
+            if (modelCreateDTO.getName() == null || modelCreateDTO.getStatus() == null || modelCreateDTO.getPrice() == null) {
+                response.setMessage("Name, status yoki price bo'sh bo'lmasligi kerak");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            // Yangi Model obyektini yaratish
             Model model = new Model();
             model.setName(modelCreateDTO.getName());
             model.setStatus(modelCreateDTO.getStatus());
@@ -47,28 +53,35 @@ public class ModelService {
             model.setColor(modelCreateDTO.getColor());
             model.setRating(modelCreateDTO.getRating());
             model.setDescription(modelCreateDTO.getDescription());
-            model.setPhoto(photoService.save(modelCreateDTO.getPhotoUrl()));
 
-            // Brend va kompaniya tekshirish
+            // Photo URL null emasligini tekshirish va foto saqlash
+            if (modelCreateDTO.getPhotoUrl() != null) {
+                model.setPhoto(photoService.save(modelCreateDTO.getPhotoUrl()));
+            } else {
+                response.setMessage("Photo URL bo'sh bo'lishi mumkin emas");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            // Brand va Company null emasligini tekshirish va ularni tekshirish
             model.setBrand(validateBrand(modelCreateDTO.getBrandId()));
             model.setCompany(validateCompany(modelCreateDTO.getCompanyId()));
 
             // Modelni saqlash
             Model savedModel = modelRepository.save(model);
             response.setData(new ModelDTO(savedModel));
-            response.setMessage("Model successfully added");
+            response.setMessage("Model muvaffaqiyatli qo'shildi");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (JsonProcessingException e) {
-            response.setMessage("Invalid JSON format: " + e.getMessage());
+            response.setMessage("JSON formati noto'g'ri: " + e.getOriginalMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
         } catch (NotFoundException | NullPointerException e) {
-            response.setMessage(e.getMessage());
+            response.setMessage("Xatolik: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 
         } catch (Exception e) {
-            response.setMessage("An error occurred: " + e.getMessage());
+            response.setMessage("Xato yuz berdi: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -76,18 +89,18 @@ public class ModelService {
     // Yordamchi metodlar
     private Brand validateBrand(Long brandId) {
         if (brandId == null) {
-            throw new NullPointerException("Brand is null");
+            throw new NullPointerException("Brand ID bo'sh bo'lmasligi kerak");
         }
         return brandRepository.findById(brandId)
-                .orElseThrow(() -> new NotFoundException("Brand not found with id: " + brandId));
+                .orElseThrow(() -> new NotFoundException("Brand topilmadi, ID: " + brandId));
     }
 
     private Company validateCompany(Long companyId) {
         if (companyId == null) {
-            throw new NullPointerException("Company is null");
+            throw new NullPointerException("Company ID bo'sh bo'lmasligi kerak");
         }
         return companyRepository.findById(companyId)
-                .orElseThrow(() -> new NotFoundException("Company not found with id: " + companyId));
+                .orElseThrow(() -> new NotFoundException("Company topilmadi, ID: " + companyId));
     }
 
 
