@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -108,5 +109,14 @@ public class UserService {
         }
     }
 
+
+    public ResponseEntity<ApiResponse<List<User>>> getAll(){
+        ApiResponse<List<User>> response=new ApiResponse<>();
+        List<User> all = userRepository.findAll();
+        response.setData(all);
+        response.setMessage("Found "+ all.size()+" user(s)");
+
+        return ResponseEntity.ok(response);
+    }
 }
 

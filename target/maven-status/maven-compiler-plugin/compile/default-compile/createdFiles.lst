@@ -10,6 +10,7 @@ com\example\carea\exception\NotDeleteException.class
 com\example\carea\dto\Token.class
 com\example\carea\service\ModelService.class
 com\example\carea\repository\ModelRepository.class
+com\example\carea\controller\UserController.class
 com\example\carea\dto\SignUpDTO.class
 com\example\carea\service\BrandService.class
 com\example\carea\handler\CustomAuthenticationEntryPoint.class

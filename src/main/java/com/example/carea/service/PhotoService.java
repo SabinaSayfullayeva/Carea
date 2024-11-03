@@ -58,4 +58,21 @@ public class PhotoService {
 
         return ResponseEntity.ok(response);
     }
+
+    public ResponseEntity<ApiResponse<?>> delete(Long id) {
+        ApiResponse<String> response = new ApiResponse<>();
+
+        // photo mavjud yoki yo‘qligini tekshirish
+        if (photoRepo.existsById(id)) {
+            // photo mavjud bo‘lsa, o‘chirib tashlash
+            photoRepo.deleteById(id);
+            response.setMessage("Deleted");
+        } else {
+            // photo mavjud bo‘lmasa, "Not found" xabarini qaytarish
+            response.setMessage("Photo not found by id: " + id);
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
