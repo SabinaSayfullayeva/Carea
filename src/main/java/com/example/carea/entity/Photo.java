@@ -28,7 +28,7 @@ public class Photo {
 
 
     @JsonProperty(value = "url")
-    @Column(unique = true)
+    @Column(unique = false)
     String url;
 
 
