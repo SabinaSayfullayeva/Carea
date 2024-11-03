@@ -43,6 +43,7 @@ com\example\carea\exception\FileSavingException.class
 com\example\carea\config\DataLoader.class
 com\example\carea\repository\BrandRepository.class
 com\example\carea\dto\PhotoDTO.class
+com\example\carea\dto\UserSearchDTO.class
 com\example\carea\entity\UserRole.class
 com\example\carea\controller\PhotoController.class
 com\example\carea\dto\ApiResponse.class

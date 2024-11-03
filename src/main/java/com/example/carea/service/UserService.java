@@ -1,10 +1,7 @@
 package com.example.carea.service;
 
 
-import com.example.carea.dto.ApiResponse;
-import com.example.carea.dto.SignInDTO;
-import com.example.carea.dto.SignUpDTO;
-import com.example.carea.dto.Token;
+import com.example.carea.dto.*;
 import com.example.carea.entity.Role;
 import com.example.carea.entity.User;
 import com.example.carea.entity.UserRole;
@@ -116,6 +113,25 @@ public class UserService {
         response.setData(all);
         response.setMessage("Found "+ all.size()+" user(s)");
 
+        return ResponseEntity.ok(response);
+    }
+
+
+    public ResponseEntity<ApiResponse<User>> getByEmail(String json)
+    {
+        ApiResponse<User> response=new ApiResponse<>();
+        try {
+            UserSearchDTO userSearchDTO = objectMapper.readValue(json, UserSearchDTO.class);
+            Optional<User> byEmail = userRepository.findByEmail(userSearchDTO.getEmail());
+            if (byEmail.isEmpty()){
+                response.setMessage("User not found with email : "+userSearchDTO.getEmail());
+            }else {
+                response.setData(byEmail.get());
+                response.setMessage("User found");
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok(response);
     }
 }
