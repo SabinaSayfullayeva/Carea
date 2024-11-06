@@ -104,20 +104,33 @@ public class ModelService {
     }
 
 
-    public ResponseEntity<ApiResponse<List<ModelDTO>>> getAll(String name, Long brandId) {
+    public ResponseEntity<ApiResponse<List<ModelDTO>>> getAll(String json) {
         ApiResponse<List<ModelDTO>> response = new ApiResponse<>();
+        List<ModelDTO> dtos = new ArrayList<>();
 
         try {
-            // Filtrlar bo'yicha modelni qidirish
-            Specification<Model> specification = ModelSpecification.byFilters(name, brandId);
-            List<Model> all = modelRepository.findAll(specification);
-            List<ModelDTO> dtos = new ArrayList<>();
+            ModelSearchDTO modelSearchDTO = objectMapper.readValue(json, ModelSearchDTO.class);
 
-            for (Model model : all) {
-                dtos.add(new ModelDTO(model));
+            // Ixtiyoriy qiymatlar uchun tekshirish
+            String name = Optional.ofNullable(modelSearchDTO.getName()).orElse("");
+            Long brandId = modelSearchDTO.getBrandId();
+
+            // Filtr bo'yicha qidiruv yoki barcha elementlarni olish
+            if (!name.isBlank() || brandId != null) {
+                Specification<Model> specification = ModelSpecification.byFilters(name, brandId);
+                List<Model> all = modelRepository.findAll(specification);
+
+                for (Model model : all) {
+                    dtos.add(new ModelDTO(model));
+                }
+            } else {
+                List<Model> all = modelRepository.findAll();
+
+                for (Model model : all) {
+                    dtos.add(new ModelDTO(model));
+                }
             }
 
-            // Javobni sozlash
             response.setData(dtos);
             response.setMessage("Found " + dtos.size() + " models");
             return ResponseEntity.ok(response);
@@ -127,6 +140,7 @@ public class ModelService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 
 
 

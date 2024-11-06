@@ -38,10 +38,9 @@ public class ModelController {
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<ModelDTO>>> getAll(
-            @RequestParam(required = false,value = "name") String name,
-            @RequestParam(required = false,value = "brandId") Long brandId
+            @RequestBody String json
     ) {
-        return modelService.getAll(name,brandId);
+        return modelService.getAll(json);
     }
 
     @DeleteMapping("/delete/{id}")

@@ -2,9 +2,7 @@ package com.example.carea.service;
 
 
 import com.example.carea.dto.*;
-import com.example.carea.entity.Role;
 import com.example.carea.entity.User;
-import com.example.carea.entity.UserRole;
 import com.example.carea.repository.UserRepository;
 import com.example.carea.repository.UserRoleRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,10 +29,10 @@ public class UserService {
     public ResponseEntity<ApiResponse<Token>> login(String json) {
         ApiResponse<Token> response = new ApiResponse<>();
         try {
-            // JSON obyektini parsing qilish
+
             SignInDTO signInDTO = objectMapper.readValue(json, SignInDTO.class);
 
-            // Foydalanuvchini email bo'yicha izlash
+
             Optional<User> optional = userRepository.findByEmail(signInDTO.getEmail());
 
             if (optional.isEmpty()) {
@@ -44,7 +42,7 @@ public class UserService {
 
             User user = optional.get();
 
-            // Parolni tekshirish
+
             if (passwordEncoder.matches(signInDTO.getPassword(), user.getPassword())) {
                 Token token = new Token(tokenService.generateToken(signInDTO.getEmail()));
                 response.setMessage(String.format("Tizimga kirildi: %s.", user.getUsername()));
@@ -70,10 +68,10 @@ public class UserService {
     public ResponseEntity<ApiResponse<Token>> signUp(String json) {
         ApiResponse<Token> response = new ApiResponse<>();
         try {
-            // JSON obyektini parsing qilish
+
             SignUpDTO signUpDTO = objectMapper.readValue(json, SignUpDTO.class);
 
-            // Foydalanuvchini email bo'yicha tekshirish
+
             Optional<User> optional = userRepository.findByEmail(signUpDTO.getEmail());
 
             if (optional.isPresent()) {
@@ -81,16 +79,14 @@ public class UserService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
 
-            // Yangi foydalanuvchi yaratish
+
             User newUser = new User();
             newUser.setEmail(signUpDTO.getEmail());
             newUser.setUsername(signUpDTO.getUsername());
             newUser.setRole(userRoleRepository.findById(1L).orElseThrow(() -> new RuntimeException("Role not found")));
             newUser.setPassword(passwordEncoder.encode(signUpDTO.getPassword())); // Parolni shifrlash
 
-            userRepository.save(newUser); // Yangi foydalanuvchini saqlash
-
-            // Yangi foydalanuvchi uchun token yaratish
+            userRepository.save(newUser);
             Token token = new Token(tokenService.generateToken(signUpDTO.getEmail()));
             response.setMessage("Muvaffaqiyatli ro'yxatdan o'tildi.");
             response.setData(token);

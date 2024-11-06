@@ -42,6 +42,7 @@ com\example\carea\repository\CompanyRepository.class
 com\example\carea\exception\FileSavingException.class
 com\example\carea\config\DataLoader.class
 com\example\carea\repository\BrandRepository.class
+com\example\carea\dto\ModelSearchDTO.class
 com\example\carea\dto\PhotoDTO.class
 com\example\carea\dto\UserSearchDTO.class
 com\example\carea\entity\UserRole.class
