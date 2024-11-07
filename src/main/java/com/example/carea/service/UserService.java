@@ -45,7 +45,7 @@ public class UserService {
 
             if (passwordEncoder.matches(signInDTO.getPassword(), user.getPassword())) {
                 Token token = new Token(tokenService.generateToken(signInDTO.getEmail()));
-                response.setMessage(String.format("Tizimga kirildi: %s.", user.getUsername()));
+                response.setMessage(String.format("Tizimga kirildi: %s.", user.getEmail()));
                 response.setData(token);
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {
